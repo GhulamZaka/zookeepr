@@ -1,9 +1,10 @@
-const { animals } = require("./data/animals");
-const express = require("express");
-const PORT = process.env.PORT || 3001;
-const app = express();
 const fs = require("fs");
 const path = require("path");
+const { animals } = require("./data/animals");
+const express = require("express");
+
+const PORT = process.env.PORT || 3001;
+const app = express();
 
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
@@ -72,6 +73,21 @@ function createNewAnimal(body, animalsArray) {
 }
 
 ////// validating
+function validateAnimal(animal) {
+  if (!animal.name || typeof animal.name !== "string") {
+    return false;
+  }
+  if (!animal.species || typeof animal.species !== "string") {
+    return false;
+  }
+  if (!animal.diet || typeof animal.diet !== "string") {
+    return false;
+  }
+  if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+    return false;
+  }
+  return true;
+}
 
 app.get("/api/animals", (req, res) => {
   let results = animals;
@@ -90,10 +106,6 @@ app.get("/api/animals/:id", (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`API server now on port ${PORT}!`);
-});
-///////////////////////////////
 app.post("/api/animals", (req, res) => {
   // set id based on what the next index of the array will be
   req.body.id = animals.length.toString();
@@ -107,18 +119,6 @@ app.post("/api/animals", (req, res) => {
   }
 });
 
-function validateAnimal(animal) {
-  if (!animal.name || typeof animal.name !== "string") {
-    return false;
-  }
-  if (!animal.species || typeof animal.species !== "string") {
-    return false;
-  }
-  if (!animal.diet || typeof animal.diet !== "string") {
-    return false;
-  }
-  if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
-    return false;
-  }
-  return true;
-}
+app.listen(PORT, () => {
+  console.log(`API server now on port ${PORT}!`);
+});
